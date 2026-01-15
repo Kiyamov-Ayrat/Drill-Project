@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from models.well_constraction import Construction, CasingColumn
+from models.well_constraction import Construction
 from schemas.well_constraction import ColumnResponse, ConductorInputParams, CasingDepth
 from database.data import SessionDep
 from models.well import Well
@@ -16,7 +16,7 @@ router = APIRouter()
 @router.post("/well_conductor",
              response_model=ColumnResponse,
              tags=["well_constraction"])
-def create_well_constraction(session: SessionDep, well_id: int,
+def create_conductor(session: SessionDep, well_id: int,
                              params: ConductorInputParams)->ColumnResponse:
     well = session.get(Well, well_id)
     if well is None:
@@ -24,7 +24,8 @@ def create_well_constraction(session: SessionDep, well_id: int,
     result = calculate_conductor_depth(params)
     db_obj = Construction(
         well_id=well_id,
-        conductor_depth=result.conductor_depth
+        column_depth=result.column_depth,
+        column_name=result.column_name
     )
     session.add(db_obj)
     session.commit()
@@ -45,13 +46,18 @@ def create_well_columns(session: SessionDep, well_id: int):
         return []
     intervals = [HydraulicResult.model_validate(i) for i in intervals_db]
     results = define_column(intervals)
-    construction = session.scalars(select(Construction).where(Construction.well_id == well_id)).first()
+    # construction = session.scalars(select(Construction).where(Construction.well_id == well_id)).first()
     db_objects = []
     for result in results:
-        db_obj = CasingColumn(
-            depth_m=result.depth,
-            construction_id = construction.id
+        db_obj = Construction(
+            well_id=well_id,
+            column_depth=result.column_depth,
+            column_name=result.column_name
         )
+        # db_obj = CasingColumn(
+        #     depth_m=result.depth,
+        #     construction_id = construction.id
+        # )
         session.add(db_obj)
         db_objects.append(db_obj)
     session.commit()

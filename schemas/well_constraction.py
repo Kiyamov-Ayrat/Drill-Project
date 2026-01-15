@@ -20,9 +20,12 @@ class ConductorInputParams(BaseModel):
     t2: Optional[int] = Field(default=0, ge=0, description="2 Well temperature, C")
 
 class ColumnResponse(BaseModel):
-    conductor_depth: float = Field(..., description="Depth of the conductor, cm")
+    column_depth: float = Field(..., description="Depth of the conductor, cm")
+    column_name: str = Field(...,description="Name of the column")
+
     model_config = ConfigDict(from_attributes=True)
 
 class CasingDepth(BaseModel):
-    depth: int
+    column_depth: int
+    column_name: str = Field(...,description="Name of the column")
     model_config = ConfigDict(from_attributes=True)

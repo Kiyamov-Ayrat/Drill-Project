@@ -25,4 +25,5 @@ def define_column(intervals:list[HydraulicResult])-> list[CasingDepth]:
         if needs_casing(anomaly_current, anomaly_next, frac_current, frac_next):
             shoe_depths.append(next.depth_up_m)
     print(shoe_depths)
-    return [CasingDepth(depth=d) for d in shoe_depths]
+    return [CasingDepth(column_depth=depth, column_name=f"column {i}")
+            for i, depth in enumerate(shoe_depths, start=1)]

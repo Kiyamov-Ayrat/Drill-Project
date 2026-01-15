@@ -16,11 +16,13 @@ def calculate_conductor_depth(params: ConductorInputParams)->ColumnResponse:
         avg_temp = ((params.t1+273)+(params.t2+273))/2
         S = (0.034*params.fluid_density*(params.depth_form-params.Z))/(0.6*avg_temp)
         H_c = params.pressure/(exp(S)*grad_p)
-        return ColumnResponse(conductor_depth=H_c)
+        return ColumnResponse(column_depth=H_c,
+                              column_name="conductor",)
     elif params.fluid == FluidType.OIL:
         hydrostatic = params.fluid_density*GRAVITY*params.depth_form
         H_c = (params.pressure-hydrostatic)/(grad_p-params.depth_form*GRAVITY)
-        return ColumnResponse(conductor_depth=H_c)
+        return ColumnResponse(column_depth=H_c,
+                              column_name="conductor",)
     else:
         raise ValueError(f"Conductor concentration {params.fluid} not implemented")
 
