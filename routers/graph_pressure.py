@@ -1,12 +1,10 @@
-from http.client import HTTPException
-
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from utils.calculations.graph_pressure import calculate_parameters_all
 from schemas.graph_pressure import HydraulicInput, HydraulicResult
 from database.data import SessionDep
 from models.graph_pressure import Info
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from utils.graph.graph_pressure import build_graphic
 from models.well import Well
 
@@ -42,13 +40,33 @@ def create_data(session: SessionDep, well_id: int,
     return [HydraulicResult.model_validate(db_obj) for db_obj in db_objects]
 
 
-@router.get("/data",
+@router.get("/data{well_id}",
             tags=["data"],
             response_model=list[HydraulicResult])
-def read_data(session: SessionDep, well_id: int):
-    stmt = select(Info).where(Info.well_id==well_id)
-    data = session.scalars(stmt).all()
-    return [HydraulicResult.model_validate(d) for d in data]
+def read_data(session: SessionDep, well_id: int) -> list[HydraulicResult]:
+    well = session.get(Well, well_id)
+    if not well:
+        raise HTTPException(status_code=404, detail="Well not found")
+    stmt = select(Info).where(Info.well_id == well_id)
+    parameters = session.scalars(stmt).all()
+    if not parameters:
+        raise HTTPException(status_code=404, detail="no data found")
+    return [HydraulicResult.model_validate(parameter) for parameter in parameters]
+
+@router.delete("/data{well_id}",
+               tags=["data"])
+def delete_data(session: SessionDep, well_id: int):
+    well = session.get(Well, well_id)
+    if not well:
+        raise HTTPException(status_code=404, detail="Well not found")
+    stmt = delete(Info).where(Info.well_id == well_id)
+    parameters = session.execute(stmt)
+    if parameters.rowcount == 0:
+        raise HTTPException(status_code=404, detail="no data found")
+    session.commit()
+    return {"success": True,
+            "deleted": parameters.rowcount}
+
 
 @router.get("/graph",
             tags=["data"])
