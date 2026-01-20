@@ -2,7 +2,7 @@ from sqlalchemy.orm import (relationship,
                             Mapped, mapped_column)
 from sqlalchemy import ForeignKey
 
-from models.well import Data
+from models.data import Data
 
 
 class Construction(Data):

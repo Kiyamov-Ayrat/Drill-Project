@@ -2,15 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from typing import Annotated
 from fastapi import Depends
-from models.graph_pressure import Data
 from core.config import DATABASE_URL
-
+# from models.data import Data
 
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def create_db_and_tables():
-    Data.metadata.create_all(bind=engine)
+# def create_db_and_tables():
+#     Data.metadata.create_all(bind=engine)
 
 
 def get_session():

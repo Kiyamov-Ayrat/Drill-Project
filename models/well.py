@@ -1,8 +1,5 @@
-from sqlalchemy.orm import (DeclarativeBase,
-                            Mapped, mapped_column, relationship)
-
-class Data(DeclarativeBase):
-    pass
+from sqlalchemy.orm import (Mapped, mapped_column, relationship)
+from models.data import Data
 
 class Well(Data):
     __tablename__ = 'well'

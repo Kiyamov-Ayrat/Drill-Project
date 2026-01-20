@@ -2,7 +2,7 @@ from sqlalchemy.orm import (Mapped, mapped_column,
                             relationship)
 from sqlalchemy import ForeignKey
 
-from models.well import Data
+from models.data import Data
 
 class Info(Data):
     __tablename__ = 'info'
