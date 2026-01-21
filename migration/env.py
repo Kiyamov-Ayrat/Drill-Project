@@ -23,6 +23,7 @@ from models.well import Well
 from models.graph_pressure import Info
 from models.well_constraction import Construction
 from models.casing_standard import StandardCasingDiameter, WallThickness
+from models.bit_standard import Bit
 
 target_metadata = Data.metadata
 
