@@ -6,6 +6,7 @@ class StandardCasingDiameter(Data):
     __tablename__ = "standard_casing_diameter"
     id: Mapped[int] = mapped_column(primary_key=True)
     diameter: Mapped[int] = mapped_column()
+    coupling_diameter: Mapped[float |None] = mapped_column()
 
     thickness: Mapped[list["WallThickness"]] = (
         relationship("WallThickness",
