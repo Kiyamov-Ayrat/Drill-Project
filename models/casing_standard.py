@@ -7,6 +7,8 @@ class StandardCasingDiameter(Data):
     id: Mapped[int] = mapped_column(primary_key=True)
     diameter: Mapped[int] = mapped_column()
     coupling_diameter: Mapped[float |None] = mapped_column()
+    recommended_clearance: Mapped[int | None] = mapped_column()
+
 
     thickness: Mapped[list["WallThickness"]] = (
         relationship("WallThickness",

@@ -41,8 +41,8 @@ def get_columns(session: SessionDep, well_id: int) -> list[ColumnResponse]:
         raise HTTPException(status_code=404, detail="Well not found")
     stmt = select(Construction).where(Construction.well_id == well_id)
     columns_db = session.scalars(stmt).all()
-    if columns_db is None:
-        raise HTTPException(status_code=404, detail="Well not found")
+    if not columns_db:
+        raise HTTPException(status_code=404, detail="Columns not found")
     return [ColumnResponse.model_validate(colum) for colum in columns_db]
 
 

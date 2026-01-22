@@ -13,3 +13,9 @@ class Well(Data):
         relationship("Construction",
                      back_populates="well",
                      cascade="all, delete-orphan"))
+
+    construction_diameter: Mapped[list["ConstructionDiameter"]] = (
+        relationship("ConstructionDiameter",
+                     back_populates="well",
+                     cascade="all, delete-orphan")
+    )
