@@ -25,6 +25,7 @@ from models.well_constraction import Construction
 from models.casing_standard import StandardCasingDiameter, WallThickness
 from models.bit_standard import Bit
 from models.construction_diameter import ConstructionDiameter
+from models.debit_standard import DebitStandard
 
 target_metadata = Data.metadata
 

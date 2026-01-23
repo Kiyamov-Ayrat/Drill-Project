@@ -1,6 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models.data import Data
+from models.debit_standard import debit_standard_association
+
 
 class StandardCasingDiameter(Data):
     __tablename__ = "standard_casing_diameter"
@@ -13,6 +15,10 @@ class StandardCasingDiameter(Data):
     thickness: Mapped[list["WallThickness"]] = (
         relationship("WallThickness",
                      back_populates="diameter"))
+
+    debit_standards: Mapped[list["DebitStandard"]] = relationship("DebitStandard",
+                                                                  secondary=debit_standard_association,
+                                                                  back_populates="diameters")
 
 class WallThickness(Data):
     __tablename__ = "wall_thickness"
