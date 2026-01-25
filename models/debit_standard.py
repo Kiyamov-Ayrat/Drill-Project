@@ -20,4 +20,4 @@ class DebitStandard(Data):
     diameters: Mapped[list["StandardCasingDiameter"]] = (
         relationship("StandardCasingDiameter",
                      secondary=debit_standard_association,
-                     backref="debit_standard"))
+                     back_populates="debit_standards"))
