@@ -1,17 +1,15 @@
 from math import exp
-from pydantic import BaseModel, Field
-from typing import Optional
-from schemas.graph_pressure import HydraulicResult
-
 from schemas.well_constraction import (ConductorInputParams,
                                        ColumnResponse,
                                        FluidType)
+from fastapi import HTTPException
 
 GRAVITY = 9.80665 #m/s^2
 
 def calculate_conductor_depth(params: ConductorInputParams)->ColumnResponse:
+    if params.depth1 == params.depth2:
+        raise HTTPException(status_code=400, detail="zero division, depth1 or depth2 must be different")
     grad_p = (params.frac_press2 - params.frac_press1) / (params.depth2 - params.depth1)
-    print(grad_p)
     if params.fluid == FluidType.GAS:
         avg_temp = ((params.t1+273)+(params.t2+273))/2
         S = (0.034*params.fluid_density*(params.depth_form-params.Z))/(0.6*avg_temp)
@@ -50,7 +48,3 @@ params_oil = ConductorInputParams(
         depth2=3155,
         depth_form=3050
     )
-
-
-# d = define_column(data)
-# print(d)

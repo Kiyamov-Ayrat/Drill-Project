@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get("/first_diameter",
             tags=["diameter"])
 
-def get_first_diameter(session: SessionDep, debit: int, fluid_type: str):
+async def get_first_diameter(session: SessionDep, debit: int, fluid_type: str):
     stmt = (
         select(DebitStandard).
         options(selectinload(DebitStandard.diameters))
@@ -30,7 +30,8 @@ def get_first_diameter(session: SessionDep, debit: int, fluid_type: str):
         .order_by(DebitStandard.debit.asc())
         .limit(1)
     )
-    standard = session.scalars(stmt).first()
+    result = await session.scalars(stmt)
+    standard = result.first()
     if not standard:
         raise HTTPException(status_code=404, detail="No suitable diameters")
 

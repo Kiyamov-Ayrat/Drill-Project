@@ -12,9 +12,9 @@ router = APIRouter()
 
 @router.post("/data",
              tags=["data"])
-def create_data(session: SessionDep, well_id: int,
+async def create_data(session: SessionDep, well_id: int,
                 inputs: list[HydraulicInput]) -> list[HydraulicResult]:
-    well = session.get(Well, well_id)
+    well = await session.get(Well, well_id)
     if not well:
         raise HTTPException(status_code=404, detail="Well not found")
 
@@ -31,44 +31,47 @@ def create_data(session: SessionDep, well_id: int,
             fracturing_coefficient=result.fracturing_coefficient,
             fracturing_coefficient2=result.fracturing_coefficient2,
             mud_density=result.mud_density
-        )
+            )
         session.add(db_obj)
         db_objects.append(db_obj)
-    session.commit()
-    for obj in db_objects:
-        session.refresh(obj)
+    await session.commit()
+    # for obj in db_objects:
+    #     await session.refresh(obj)
     return [HydraulicResult.model_validate(db_obj) for db_obj in db_objects]
 
 
 @router.get("/data{well_id}",
             tags=["data"],
             response_model=list[HydraulicResult])
-def read_data(session: SessionDep, well_id: int) -> list[HydraulicResult]:
-    well = session.get(Well, well_id)
+async def read_data(session: SessionDep, well_id: int) -> list[HydraulicResult]:
+    well = await session.get(Well, well_id)
     if not well:
         raise HTTPException(status_code=404, detail="Well not found")
     stmt = select(Info).where(Info.well_id == well_id)
-    parameters = session.scalars(stmt).all()
+    result = await session.scalars(stmt)
+    parameters = result.all()
     if not parameters:
         raise HTTPException(status_code=404, detail="no data found")
     return [HydraulicResult.model_validate(parameter) for parameter in parameters]
 
-@router.delete("/data{well_id}",
+@router.delete("/data/{well_id}",
                tags=["data"])
-def delete_data(session: SessionDep, well_id: int):
-    well = session.get(Well, well_id)
+async def delete_data(session: SessionDep, well_id: int):
+    well = await session.get(Well, well_id)
     if not well:
         raise HTTPException(status_code=404, detail="Well not found")
     stmt = delete(Info).where(Info.well_id == well_id)
-    parameters = session.execute(stmt)
-    if parameters.rowcount == 0:
+
+    result = await session.execute(stmt)
+    delete_count = result.rowcount
+    if delete_count == 0:
         raise HTTPException(status_code=404, detail="no data found")
-    session.commit()
+    await session.commit()
     return {"success": True,
-            "deleted": parameters.rowcount}
+            "deleted": delete_count}
 
 
 @router.get("/graph",
             tags=["data"])
-def read_graph_data(session: SessionDep, well_id: int):
-    return build_graphic(session=session, well_id=well_id)
+async def read_graph_data(session: SessionDep, well_id: int):
+    return await build_graphic(session=session, well_id=well_id)
