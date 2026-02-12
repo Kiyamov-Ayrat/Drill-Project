@@ -104,7 +104,11 @@ pip install -r requirements.txt
 Создайте файл .env в корне проекта и укажите:
 
 ```bash
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/welldesigncalc
+DB_USER=Ваш ник
+DB_PASSWORD=Ваш пароль
+DB_HOST=адрес хоста (localhost)
+DB_PORT=номер порта
+DB_NAME=название БД
 ```
 
 5. Выполните миграции и загрузите справочник ГОСТ
